@@ -24,7 +24,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -72,6 +71,7 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
         student.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.cedula.includes(searchTerm) ||
+        student.telefono?.includes(searchTerm) ||
         student.instrumento.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [students, searchTerm]);
@@ -127,6 +127,7 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
       'Nombre': s.nombre,
       'Apellido': s.apellido,
       'Cédula': s.cedula,
+      'Teléfono': s.telefono,
       'Fecha de Nacimiento': format(new Date(s.fechaNacimiento), 'dd/MM/yyyy'),
       'Edad': calculateAge(s.fechaNacimiento),
       'Dirección': s.direccion,
@@ -176,6 +177,7 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
                 <TableHead className="w-12"></TableHead>
                 <TableHead>Nombre Completo</TableHead>
                 <TableHead>Cédula</TableHead>
+                <TableHead>Teléfono</TableHead>
                 <TableHead>Edad</TableHead>
                 <TableHead>Instrumento</TableHead>
                 <TableHead>Fecha de Inscripción</TableHead>
@@ -193,6 +195,7 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
                     </TableCell>
                     <TableCell className="font-medium">{`${student.nombre} ${student.apellido}`}</TableCell>
                     <TableCell>{student.cedula}</TableCell>
+                    <TableCell>{student.telefono}</TableCell>
                     <TableCell>{calculateAge(student.fechaNacimiento)}</TableCell>
                     <TableCell>{student.instrumento}</TableCell>
                     <TableCell>
@@ -243,7 +246,7 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
+                  <TableCell colSpan={8} className="h-24 text-center">
                     No se encontraron registros.
                   </TableCell>
                 </TableRow>

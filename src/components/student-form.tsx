@@ -31,6 +31,7 @@ const formSchema = z.object({
   nombre: z.string().min(2, { message: 'El nombre debe tener al menos 2 caracteres.' }),
   apellido: z.string().min(2, { message: 'El apellido debe tener al menos 2 caracteres.' }),
   cedula: z.string().min(5, { message: 'La cédula es requerida.' }),
+  telefono: z.string().min(10, { message: 'El número de teléfono es requerido.' }),
   fechaNacimiento: z.date({
     required_error: 'La fecha de nacimiento es requerida.',
   }),
@@ -54,6 +55,7 @@ export function StudentForm({ student, onSubmit, onCancel }: StudentFormProps) {
     nombre: '',
     apellido: '',
     cedula: '',
+    telefono: '',
     fechaNacimiento: undefined,
     direccion: '',
     instrumento: '',
@@ -118,6 +120,21 @@ export function StudentForm({ student, onSubmit, onCancel }: StudentFormProps) {
           />
           <FormField
             control={form.control}
+            name="telefono"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Teléfono</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ej: 0414-1234567" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField
+            control={form.control}
             name="fechaNacimiento"
             render={({ field }) => (
               <FormItem className="flex flex-col">
@@ -158,21 +175,20 @@ export function StudentForm({ student, onSubmit, onCancel }: StudentFormProps) {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="instrumento"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Instrumento</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ej: Trompeta" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
-
-        <FormField
-          control={form.control}
-          name="instrumento"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Instrumento</FormLabel>
-              <FormControl>
-                <Input placeholder="Ej: Trompeta" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         
         <FormField
           control={form.control}

@@ -11,6 +11,7 @@ const getInitialStudents = (): Student[] => {
       nombre: 'Carlos',
       apellido: 'Pérez',
       cedula: 'V-25.123.456',
+      telefono: '0414-1234567',
       fechaNacimiento: '2005-03-15T00:00:00.000Z',
       direccion: 'Av. Principal, Casa #10, Santa Elena',
       instrumento: 'Trompeta',
@@ -21,6 +22,7 @@ const getInitialStudents = (): Student[] => {
       nombre: 'Ana',
       apellido: 'Gomez',
       cedula: 'V-26.987.654',
+      telefono: '0412-7654321',
       fechaNacimiento: '2006-07-22T00:00:00.000Z',
       direccion: 'Calle 2, Edificio Roraima, Apto 5B',
       instrumento: 'Clarinete',
@@ -31,6 +33,7 @@ const getInitialStudents = (): Student[] => {
       nombre: 'Luis',
       apellido: 'Rodriguez',
       cedula: 'V-24.555.888',
+      telefono: '0424-9876543',
       fechaNacimiento: '2004-11-02T00:00:00.000Z',
       direccion: 'Urb. Tepuy, Vereda 3',
       instrumento: 'Batería',
@@ -45,7 +48,9 @@ export const getStudents = (): Student[] => {
   }
   const studentsJSON = localStorage.getItem(LOCAL_STORAGE_KEY);
   if (studentsJSON) {
-    return JSON.parse(studentsJSON);
+    const students = JSON.parse(studentsJSON);
+    // Data migration for existing users who don't have the `telefono` field
+    return students.map((s: any) => ({ ...s, telefono: s.telefono || 'N/A' }));
   } else {
     const initialStudents = getInitialStudents();
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(initialStudents));

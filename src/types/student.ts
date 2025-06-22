@@ -3,6 +3,7 @@ export interface Student {
   nombre: string;
   apellido: string;
   cedula: string;
+  telefono: string;
   fechaNacimiento: string; // ISO String
   direccion: string;
   instrumento: string;
