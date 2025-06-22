@@ -1,48 +1,61 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { AppHeader } from '@/components/app-header';
 import { StudentTable } from '@/components/student-table';
 import type { Student } from '@/types/student';
 import { getStudents, addStudent, updateStudent, deleteStudent } from '@/lib/student-service';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Home() {
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  const fetchStudents = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const studentData = await getStudents();
+      setStudents(studentData);
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: 'destructive',
+        title: 'Error de Carga',
+        description: 'No se pudieron cargar los datos. Verifique la configuración de Firebase y la consola para más detalles.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [toast]);
 
   useEffect(() => {
-    // The service uses localStorage, which is only available on the client.
-    // We also add a small delay to show the loading state.
+    // We add a small delay to show the loading state.
     const timer = setTimeout(() => {
-      setStudents(getStudents());
-      setIsLoading(false);
+        fetchStudents();
     }, 500);
-
     return () => clearTimeout(timer);
-  }, []);
+  }, [fetchStudents]);
 
-  const handleDataChange = () => {
-    setStudents(getStudents());
+  const handleAddStudent = async (studentData: Omit<Student, 'id' | 'fechaInscripcion'>) => {
+    await addStudent(studentData);
+    await fetchStudents();
   };
 
-  const handleAddStudent = (studentData: Omit<Student, 'id' | 'fechaInscripcion'>) => {
-    addStudent(studentData);
-    handleDataChange();
+  const handleUpdateStudent = async (student: Student) => {
+    const { id, ...data } = student;
+    await updateStudent(id, data);
+    await fetchStudents();
   };
 
-  const handleUpdateStudent = (student: Student) => {
-    updateStudent(student.id, student);
-    handleDataChange();
-  };
-
-  const handleDeleteStudent = (id: string) => {
-    deleteStudent(id);
-    handleDataChange();
+  const handleDeleteStudent = async (id: string) => {
+    await deleteStudent(id);
+    await fetchStudents();
   };
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full bg-background">
       <AppHeader />
       <main className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
         {isLoading ? (

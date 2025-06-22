@@ -1,84 +1,74 @@
-'use client';
-
+import { db } from './firebase';
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  Timestamp,
+  serverTimestamp,
+  query,
+  orderBy,
+} from 'firebase/firestore';
 import type { Student } from '@/types/student';
 
-const LOCAL_STORAGE_KEY = 'banda_show_tepuy_roraima_students';
+const studentsCollectionRef = collection(db, 'students');
 
-const getInitialStudents = (): Student[] => {
-  return [
-    {
-      id: '1',
-      nombre: 'Carlos',
-      apellido: 'Pérez',
-      cedula: 'V-25.123.456',
-      telefono: '0414-1234567',
-      fechaNacimiento: '2005-03-15T00:00:00.000Z',
-      direccion: 'Av. Principal, Casa #10, Santa Elena',
-      instrumento: 'Trompeta',
-      fechaInscripcion: '2023-01-20T00:00:00.000Z',
-    },
-    {
-      id: '2',
-      nombre: 'Ana',
-      apellido: 'Gomez',
-      cedula: 'V-26.987.654',
-      telefono: '0412-7654321',
-      fechaNacimiento: '2006-07-22T00:00:00.000Z',
-      direccion: 'Calle 2, Edificio Roraima, Apto 5B',
-      instrumento: 'Clarinete',
-      fechaInscripcion: '2023-02-11T00:00:00.000Z',
-    },
-    {
-      id: '3',
-      nombre: 'Luis',
-      apellido: 'Rodriguez',
-      cedula: 'V-24.555.888',
-      telefono: '0424-9876543',
-      fechaNacimiento: '2004-11-02T00:00:00.000Z',
-      direccion: 'Urb. Tepuy, Vereda 3',
-      instrumento: 'Batería',
-      fechaInscripcion: '2022-11-30T00:00:00.000Z',
-    },
-  ];
+const fromFirestore = (snapshot: any): Student => {
+  const data = snapshot.data();
+  return {
+    id: snapshot.id,
+    nombre: data.nombre,
+    apellido: data.apellido,
+    cedula: data.cedula,
+    telefono: data.telefono,
+    fechaNacimiento: (data.fechaNacimiento as Timestamp).toDate().toISOString(),
+    direccion: data.direccion,
+    instrumento: data.instrumento,
+    fechaInscripcion: (data.fechaInscripcion as Timestamp).toDate().toISOString(),
+  };
 };
 
-export const getStudents = (): Student[] => {
-  if (typeof window === 'undefined') {
+export const getStudents = async (): Promise<Student[]> => {
+  try {
+    const q = query(studentsCollectionRef, orderBy('fechaInscripcion', 'desc'));
+    const querySnapshot = await getDocs(q);
+    
+    // El SDK de Firestore puede devolver Timestamps o null para las fechas.
+    // Para evitar errores, filtramos los documentos donde `fechaInscripcion` no es un Timestamp.
+    const validDocs = querySnapshot.docs.filter(doc => doc.data().fechaInscripcion instanceof Timestamp);
+    
+    return validDocs.map(fromFirestore);
+  } catch (error) {
+    console.error("Error al obtener documentos: ", error);
+    if ((error as any).code === 'failed-precondition') {
+       console.error("Faltan los índices de Firestore. Revisa la consola para ver el enlace para crearlos.");
+    }
     return [];
   }
-  const studentsJSON = localStorage.getItem(LOCAL_STORAGE_KEY);
-  if (studentsJSON) {
-    const students = JSON.parse(studentsJSON);
-    // Data migration for existing users who don't have the `telefono` field
-    return students.map((s: any) => ({ ...s, telefono: s.telefono || 'N/A' }));
-  } else {
-    const initialStudents = getInitialStudents();
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(initialStudents));
-    return initialStudents;
-  }
 };
 
-export const addStudent = (studentData: Omit<Student, 'id' | 'fechaInscripcion'>) => {
-  const students = getStudents();
-  const newStudent: Student = {
+export const addStudent = async (studentData: Omit<Student, 'id' | 'fechaInscripcion'>) => {
+  await addDoc(studentsCollectionRef, {
     ...studentData,
-    id: new Date().getTime().toString(),
-    fechaInscripcion: new Date().toISOString(),
+    fechaNacimiento: Timestamp.fromDate(new Date(studentData.fechaNacimiento)),
+    fechaInscripcion: serverTimestamp(),
+  });
+};
+
+export const updateStudent = async (id: string, updatedData: Omit<Student, 'id'>) => {
+  const studentDoc = doc(db, 'students', id);
+  const dataToUpdate = {
+    ...updatedData,
+    fechaNacimiento: Timestamp.fromDate(new Date(updatedData.fechaNacimiento)),
+    // La fecha de inscripción se mantiene, pero la convertimos a Timestamp para consistencia
+    fechaInscripcion: Timestamp.fromDate(new Date(updatedData.fechaInscripcion)),
   };
-  const updatedStudents = [...students, newStudent];
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedStudents));
+  await updateDoc(studentDoc, dataToUpdate);
 };
 
-export const updateStudent = (id: string, updatedData: Omit<Student, 'id'>) => {
-  const students = getStudents();
-  const updatedStudents = students.map((student) =>
-    student.id === id ? { ...student, ...updatedData } : student
-  );
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedStudents));
-};
-
-export const deleteStudent = (id: string) => {
-  const students = getStudents();
-  const updatedStudents = students.filter((student) => student.id !== id);
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedStudents));
+export const deleteStudent = async (id: string) => {
+  const studentDoc = doc(db, 'students', id);
+  await deleteDoc(studentDoc);
 };

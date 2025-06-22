@@ -43,7 +43,7 @@ import {
   PlusCircle,
   Search,
   Trash2,
-  User,
+  UserCircle,
 } from 'lucide-react';
 import { StudentForm } from './student-form';
 import { format } from 'date-fns';
@@ -66,6 +66,7 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
   const { toast } = useToast();
 
   const filteredStudents = useMemo(() => {
+    if (!students) return [];
     return students.filter(
       (student) =>
         student.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,14 +94,12 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
         toast({
           title: 'Éxito',
           description: 'Registro de alumno actualizado correctamente.',
-          className: 'bg-green-100 text-green-800 border-green-300',
         });
       } else {
         onAdd(data);
         toast({
           title: 'Éxito',
           description: 'Nuevo alumno registrado correctamente.',
-          className: 'bg-green-100 text-green-800 border-green-300',
         });
       }
       setIsFormOpen(false);
@@ -117,6 +116,7 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
   const handleDelete = (id: string) => {
     onDelete(id);
     toast({
+      variant: 'destructive',
       title: 'Eliminado',
       description: 'El registro del alumno ha sido eliminado.',
     });
@@ -142,7 +142,6 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
      toast({
       title: 'Exportado',
       description: 'Los registros se han exportado a Excel.',
-      className: 'bg-blue-100 text-blue-800 border-blue-300',
     });
   };
 
@@ -161,11 +160,11 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleExport}>
-              <Download className="mr-2" />
-              Exportar a Excel
+              <Download className="mr-2 h-4 w-4" />
+              Exportar
             </Button>
             <Button onClick={handleAddNew}>
-              <PlusCircle className="mr-2" />
+              <PlusCircle className="mr-2 h-4 w-4" />
               Agregar Alumno
             </Button>
           </div>
@@ -190,7 +189,7 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
                   <TableRow key={student.id}>
                     <TableCell>
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-                        <User className="h-5 w-5" />
+                        <UserCircle className="h-6 w-6" />
                       </div>
                     </TableCell>
                     <TableCell className="font-medium">{`${student.nombre} ${student.apellido}`}</TableCell>
@@ -216,7 +215,7 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
                               Modificar
                             </DropdownMenuItem>
                              <AlertDialogTrigger asChild>
-                              <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                              <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50/10">
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Eliminar
                               </DropdownMenuItem>

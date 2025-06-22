@@ -1,15 +1,15 @@
-import { Music2 } from 'lucide-react';
+import { UsersRound } from 'lucide-react';
 
 export function AppHeader() {
   return (
-    <header className="border-b bg-card">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary">
-            <Music2 className="h-6 w-6" />
+    <header className="border-b border-border/40 bg-card shadow-lg">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <UsersRound className="h-7 w-7" />
           </div>
-          <h1 className="font-headline text-xl font-bold tracking-tight text-foreground md:text-2xl">
-            Registro Banda Show Tepuy Roraima
+          <h1 className="font-headline text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+            Banda Show Tepuy Roraima
           </h1>
         </div>
       </div>
