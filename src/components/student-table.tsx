@@ -215,7 +215,7 @@ export function StudentTable({ students, onAdd, onUpdate, onDelete }: StudentTab
                               Modificar
                             </DropdownMenuItem>
                              <AlertDialogTrigger asChild>
-                              <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50/10">
+                              <DropdownMenuItem className="text-destructive focus:text-destructive">
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Eliminar
                               </DropdownMenuItem>
