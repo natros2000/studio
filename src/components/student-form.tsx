@@ -24,13 +24,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { CalendarIcon } from 'lucide-react';
 
@@ -42,17 +35,10 @@ const formSchema = z.object({
     required_error: 'La fecha de nacimiento es requerida.',
   }),
   direccion: z.string().min(10, { message: 'La dirección debe tener al menos 10 caracteres.' }),
-  instrumento: z.string({ required_error: 'Por favor seleccione un instrumento.' }),
+  instrumento: z.string().min(2, { message: 'El instrumento es requerido.' }),
 });
 
 type StudentFormValues = z.infer<typeof formSchema>;
-
-const instruments = [
-  "Trompeta", "Trombón", "Corno", "Tuba",
-  "Clarinete", "Saxofón", "Flauta",
-  "Batería", "Lira", "Platillos", "Bombo", "Redoblante",
-  "Otro"
-];
 
 interface StudentFormProps {
   student?: Student;
@@ -180,20 +166,9 @@ export function StudentForm({ student, onSubmit, onCancel }: StudentFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Instrumento</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccione un instrumento musical" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {instruments.map((instrument) => (
-                    <SelectItem key={instrument} value={instrument}>
-                      {instrument}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <Input placeholder="Ej: Trompeta" {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
