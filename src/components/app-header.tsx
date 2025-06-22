@@ -6,12 +6,11 @@ export function AppHeader() {
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-4">
           <Image
-            src="https://placehold.co/50x50.png"
+            src="https://1.bp.blogspot.com/-_9vYwB_s1vE/X-3X_g_q5QI/AAAAAAAAAAM/R8i_R0pXpAE_wZ4YyQj3x-k8dOaJz_wQCLcBGAsYHQ/s320/logo%2Bde%2Bla%2Bbanda.jpg"
             alt="Logo de la Banda"
             width={50}
             height={50}
             className="rounded-full"
-            data-ai-hint="music band"
           />
           <h1 className="font-headline text-2xl font-bold tracking-tight text-foreground md:text-3xl">
             Banda Show Tepuy Roraima
